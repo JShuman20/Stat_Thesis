@@ -41,7 +41,7 @@ for(i in c(3,5,7)){
   for(j in c(100,500)){
     print("\n", file = "~/Desktop/THESIS/Thesis_Computing/Outputs/Simulation/01_Test_Normal/Indep_Tables/ALL_RES.tex", 
           type = "latex", append = TRUE)
-    FILT = ALL_PCC_ID %>% filter(SIZE == j, QUANTILES == i)
+    FILT = ALL_PCC_ID %>% filter(SIZE == j, QUANTILES == i, METHOD !="G")
     ALL_MEAN = map_dfc(.x = c(-0.75,-0.25,0,0.25,0.75),
                        .f = function(.x){
                          TRUE_COR = .x
@@ -64,17 +64,16 @@ for(i in c(3,5,7)){
       arrange(REAL) %>%
       rename(`-0.75` = value, `-0.25` = value1, `0` = value2, `0.25` = value3, `0.75` = value4) %>%
       mutate_at(vars(5:9),~round(.,2))
-    FULL = matrix(nrow = 15,ncol = 7)
+    FULL = matrix(nrow = 10,ncol = 7)
     FULL[,1] = str_remove_all(ALL_MEAN$REAL, paste(c("Copula","_","GG"),collapse = "|"))
     FULL[,2] = ALL_MEAN$METHOD
-    for(a in 1:15){
+    for(a in 1:10){
       for(b in 3:7){
         FULL[a,b] = str_c(sprintf('%.2f',ALL_MEAN[a,b+2]),"(",sprintf('%.2f',ALL_SD[a,b+2]),")")
       }
     }
     colnames(FULL) = c("True Cop","Method","-0.75","-0.25","0","0.25","0.75")
     RES = xtable(FULL, caption = str_c("Polychoric Correlation Estimated Using Three Methods For Sample Size ", j, "\n and contingency table size ", i," x ", i)) 
-    print(RES)
     print(RES, file = "~/Desktop/THESIS/Thesis_Computing/Outputs/Simulation/01_Test_Normal/Indep_Tables/ALL_RES.tex", 
           type = "latex", append = TRUE)
   }
